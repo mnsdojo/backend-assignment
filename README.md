@@ -146,4 +146,3 @@ curl http://localhost:3000/api/health
   - Can **Create**, **Publish**, and **Block** ANY experience.
   - Can **Cancel** ANY booking.
   - Can view ALL bookings.
-# backend-assignment
