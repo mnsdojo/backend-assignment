@@ -1,0 +1,88 @@
+@baseUrl = http://localhost:3000/api
+@hostEmail = host_demo@test.com
+@userEmail = user_demo@test.com
+@password = password123
+
+### 1. Health Check
+GET {{baseUrl}}/health
+
+### 2. Signup Host
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "{{hostEmail}}",
+  "password": "{{password}}",
+  "role": "host"
+}
+
+### 3. Login Host
+# @name loginHost
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{hostEmail}}",
+  "password": "{{password}}"
+}
+
+@hostToken = {{loginHost.response.body.token}}
+
+### 4. Create Experience
+# @name createExp
+POST {{baseUrl}}/experiences
+Authorization: Bearer {{hostToken}}
+Content-Type: application/json
+
+{
+  "title": "Manual Test Experience",
+  "description": "Testing from .http file",
+  "location": "New York",
+  "price": 150,
+  "start_time": "2025-06-01T10:00:00Z"
+}
+
+@expId = {{createExp.response.body.id}}
+
+### 5. Publish Experience
+PATCH {{baseUrl}}/experiences/{{expId}}/publish
+Authorization: Bearer {{hostToken}}
+
+### 6. Signup User
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{password}}",
+  "role": "user"
+}
+
+### 7. Login User
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{password}}"
+}
+
+@userToken = {{loginUser.response.body.token}}
+
+### 8. List Experiences
+GET {{baseUrl}}/experiences?location=New York
+Authorization: Bearer {{userToken}}
+
+### 9. Book Experience
+POST {{baseUrl}}/experiences/{{expId}}/book
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "seats": 1
+}
+
+### 10. Get My Bookings
+GET {{baseUrl}}/bookings/my-bookings
+Authorization: Bearer {{userToken}}
